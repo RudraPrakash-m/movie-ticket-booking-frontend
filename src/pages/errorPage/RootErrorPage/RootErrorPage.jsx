@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarClock, ArrowLeft } from "lucide-react";
+import { Wrench, ArrowLeft } from "lucide-react";
 
-const Releasepage = () => {
+const RootErrorPage = () => {
   const navigate = useNavigate();
 
   return (
@@ -10,21 +10,20 @@ const Releasepage = () => {
       <div className="text-center max-w-xl">
         {/* icon */}
         <div className="flex justify-center mb-6">
-          <div className="bg-blue-500/10 p-5 rounded-full">
-            <CalendarClock size={48} className="text-blue-400" />
+          <div className="bg-yellow-500/10 p-5 rounded-full">
+            <Wrench size={48} className="text-yellow-400" />
           </div>
         </div>
 
         {/* title */}
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          Upcoming Releases
+          Page Under Development
         </h1>
 
         {/* description */}
         <p className="text-gray-400 mb-8 leading-relaxed">
-          We’re preparing a dedicated space to showcase upcoming movie
-          releases. This section will be available soon with trailers,
-          release dates, and reminders.
+          This section is currently being built. Some features may not be
+          available yet. Please check back later.
         </p>
 
         {/* actions */}
@@ -49,4 +48,4 @@ const Releasepage = () => {
   );
 };
 
-export default Releasepage;
+export default RootErrorPage;

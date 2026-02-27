@@ -7,6 +7,7 @@ import Showspage from './pages/showsPage/Showspage'
 import Releasepage from './pages/releasePage/Releasepage'
 import Favouritepage from './pages/favouritesPage/Favouritepage'
 import MovieBooking from './pages/movieDetails/MovieBooking'
+import RootErrorPage from './pages/errorPage/RootErrorPage/RootErrorPage'
 
 const App = () => {
 
@@ -14,6 +15,7 @@ const App = () => {
     {
       path:"/",
       element:<MainLayout/>,
+      errorElement:<RootErrorPage/>,
       children:[
         {
           index:true,
