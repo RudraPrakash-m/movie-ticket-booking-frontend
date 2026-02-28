@@ -16,7 +16,7 @@ const UserContext = ({ children }) => {
   const [user, setUser] = useState(() => {
     // const stored = localStorage.getItem("userData");
     // return stored ? JSON.parse(stored) : null;
-    return demoUser;
+    return null;
     // For now demo user auto loads
     // Later change demoUser → null for real auth
   });
