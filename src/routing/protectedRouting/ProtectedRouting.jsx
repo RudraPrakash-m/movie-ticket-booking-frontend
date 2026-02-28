@@ -4,7 +4,7 @@ import { userCon } from "../../contexts/userContext/UserContext";
 
 const ProtectedRouting = ({ children }) => {
   const { user } = useContext(userCon);
-  console.log(user);
+//   console.log(user);
 
   if (!user) {
     return <Navigate to="/auth" replace />;

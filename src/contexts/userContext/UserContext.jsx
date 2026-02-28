@@ -22,11 +22,11 @@ const UserContext = ({ children }) => {
   });
 
   // Persist user
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem("userData", JSON.stringify(user));
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     localStorage.setItem("userData", JSON.stringify(user));
+  //   }
+  // }, [user]);
 
   // ==============================
   // ❤️ FAVOURITES
@@ -154,7 +154,7 @@ const UserContext = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("userData");
+    // localStorage.removeItem("userData");
     setUser(null);
   };
 

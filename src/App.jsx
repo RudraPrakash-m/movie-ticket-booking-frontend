@@ -16,6 +16,7 @@ import BookTicketPage from "./pages/bookTicketPage/BookTicketPage";
 import TheaterLayoutProvider from "./contexts/theaterLayoutContext/TheaterLayoutProvider";
 import ProtectedRouting from "./routing/protectedRouting/ProtectedRouting";
 import PaymentPage from "./pages/paymentPage/PaymentPage";
+import MyBookings from "./pages/myBookings/MyBookings";
 
 const App = () => {
   const routes = createBrowserRouter([
@@ -58,6 +59,14 @@ const App = () => {
             <TheaterLayoutProvider>
               <BookTicketPage />
             </TheaterLayoutProvider>
+          ),
+        },
+        {
+          path: "/my-bookings",
+          element: (
+            <ProtectedRouting>
+              <MyBookings />
+            </ProtectedRouting>
           ),
         },
       ],
