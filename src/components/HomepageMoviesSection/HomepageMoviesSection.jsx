@@ -8,11 +8,12 @@ const HomepageMoviesSection = () => {
   const scrollRef = useRef(null);
   const [progress, setProgress] = useState(0);
 
-  // random movies
-  const randomMovies = useMemo(
-    () => [...movies].sort(() => 0.5 - Math.random()).slice(0, 7),
-    [movies],
-  );
+  const releasedMovies = useMemo(() => {
+  return movies
+    .filter(movie => movie.status === "released")
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 7);
+}, [movies]);
 
   // arrow scroll
   const scroll = (direction) => {
@@ -78,7 +79,7 @@ const HomepageMoviesSection = () => {
         className="overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar"
       >
         <div className="flex gap-8 px-10 md:px-16 pb-4">
-          {randomMovies.map((movie) => (
+          {releasedMovies.map((movie) => (
             <ParallaxCard key={movie.id} movie={movie} />
           ))}
         </div>

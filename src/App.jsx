@@ -8,6 +8,7 @@ import Releasepage from './pages/releasePage/Releasepage'
 import Favouritepage from './pages/favouritesPage/Favouritepage'
 import MovieBooking from './pages/movieDetails/MovieBooking'
 import RootErrorPage from './pages/errorPage/RootErrorPage/RootErrorPage'
+import BookTicketPage from './pages/bookTicketPage/BookTicketPage'
 
 const App = () => {
 

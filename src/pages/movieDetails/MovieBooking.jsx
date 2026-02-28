@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DateSelector from "../../components/DateSelector/DateSelector";
-import MovieCard from "../../components/MovieCard/MovieCard";
 import HomepageMoviesSection from "../../components/HomepageMoviesSection/HomepageMoviesSection";
 
 const MovieBooking = () => {
@@ -9,9 +8,9 @@ const MovieBooking = () => {
   const navigate = useNavigate();
   const movie = location.state?.movie;
 
-    useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [movie]);
 
   // ⭐ fallback guard
   if (!movie) {
