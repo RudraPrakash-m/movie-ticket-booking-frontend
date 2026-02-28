@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const HeroSection = ({thumbMovie}) => {
-
-    const [movie, setMovie] = useState(thumbMovie)
+const HeroSection = ({ thumbMovie }) => {
+  const [movie, setMovie] = useState(thumbMovie);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -41,7 +42,10 @@ const HeroSection = ({thumbMovie}) => {
           </p>
 
           {/* button */}
-          <button className="mt-2 w-fit px-6 py-3 sm:px-7 bg-red-600 hover:bg-red-700 rounded-full font-semibold transition">
+          <button
+            className="mt-2 w-fit px-6 py-3 sm:px-7 bg-red-600 hover:bg-red-700 rounded-full font-semibold transition"
+            onClick={() => navigate("/shows")}
+          >
             Explore Now
           </button>
         </div>

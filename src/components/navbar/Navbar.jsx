@@ -1,11 +1,35 @@
-import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
 
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const trimmed = searchTerm.trim();
+
+      if (trimmed !== "") {
+        // Navigate only if not already on search page
+        if (location.pathname !== "/search") {
+          navigate(`/search?q=${trimmed}`);
+        } else {
+          navigate(`/search?q=${trimmed}`, { replace: true });
+        }
+      } else {
+        // If input becomes empty and currently on search page
+        if (location.pathname === "/search") {
+          navigate("/", { replace: true });
+        }
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm, location.pathname]);
 
   const navLinkStyle = ({ isActive }) =>
     `px-4 py-2 rounded-full text-sm transition-all ${
@@ -45,8 +69,11 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-4">
           {/* Search */}
           <input
-            placeholder="Search..."
-            className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/70 outline-none focus:ring-2 focus:ring-white/40"
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search movies..."
+            className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-red-500 transition w-48 md:w-56"
           />
 
           {/* Login */}
