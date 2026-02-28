@@ -2,39 +2,39 @@ import React, { createContext, useState, useEffect } from "react";
 
 export const userCon = createContext();
 
+const demoUser = {
+  id: "u_001",
+  name: "Rudra Prakash Mallick",
+  email: "rudra@email.com",
+  role: "user",
+  favourites: [],
+  bookedTickets: [],
+  createdAt: "2026-01-01",
+};
+
 const UserContext = ({ children }) => {
-  // -------------------------------
-  // 🔐 INITIAL USER STATE
-  // -------------------------------
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("userData");
-
-    if (stored) return JSON.parse(stored);
-
-    return {
-      id: "u_001",
-      name: "Rudra Prakash Mallick",
-      email: "rudra@email.com",
-      role: "user",
-
-      favourites: [],
-
-      bookedTickets: [],
-
-      createdAt: "2026-01-01",
-    };
+    // const stored = localStorage.getItem("userData");
+    // return stored ? JSON.parse(stored) : null;
+    return demoUser;
+    // For now demo user auto loads
+    // Later change demoUser → null for real auth
   });
 
-  // Persist user in localStorage
+  // Persist user
   useEffect(() => {
-    localStorage.setItem("userData", JSON.stringify(user));
+    if (user) {
+      localStorage.setItem("userData", JSON.stringify(user));
+    }
   }, [user]);
 
-  // ======================================================
-  // ⭐ FAVOURITE FUNCTIONS
-  // ======================================================
+  // ==============================
+  // ❤️ FAVOURITES
+  // ==============================
 
   const addFavourite = (movieId) => {
+    if (!user) return;
+
     setUser((prev) => {
       if (prev.favourites.includes(movieId)) return prev;
 
@@ -46,6 +46,8 @@ const UserContext = ({ children }) => {
   };
 
   const removeFavourite = (movieId) => {
+    if (!user) return;
+
     setUser((prev) => ({
       ...prev,
       favourites: prev.favourites.filter((id) => id !== movieId),
@@ -53,6 +55,8 @@ const UserContext = ({ children }) => {
   };
 
   const toggleFavourite = (movieId) => {
+    if (!user) return;
+
     setUser((prev) => {
       const isFav = prev.favourites.includes(movieId);
 
@@ -66,15 +70,17 @@ const UserContext = ({ children }) => {
   };
 
   const clearFavourites = () => {
+    if (!user) return;
+
     setUser((prev) => ({
       ...prev,
       favourites: [],
     }));
   };
 
-  // ======================================================
-  // 🎟 BOOKING FUNCTIONS
-  // ======================================================
+  // ==============================
+  // 🎟 BOOKINGS
+  // ==============================
 
   const bookTicket = ({
     movieId,
@@ -84,25 +90,19 @@ const UserContext = ({ children }) => {
     seats,
     pricePerSeat,
   }) => {
-    if (!seats || seats.length === 0) return;
+    if (!user || !seats?.length) return;
 
     const newBooking = {
       bookingId: "b_" + Date.now(),
-
       movieId,
       movieTitle,
-
       showDate,
       showTime,
-
       seats,
-
       pricePerSeat,
       totalAmount: seats.length * pricePerSeat,
-
-      paymentStatus: "paid", // simulate
+      paymentStatus: "paid",
       bookingStatus: "confirmed",
-
       bookedAt: new Date().toISOString().split("T")[0],
     };
 
@@ -113,6 +113,8 @@ const UserContext = ({ children }) => {
   };
 
   const cancelBooking = (bookingId) => {
+    if (!user) return;
+
     setUser((prev) => ({
       ...prev,
       bookedTickets: prev.bookedTickets.map((booking) =>
@@ -124,6 +126,8 @@ const UserContext = ({ children }) => {
   };
 
   const removeBooking = (bookingId) => {
+    if (!user) return;
+
     setUser((prev) => ({
       ...prev,
       bookedTickets: prev.bookedTickets.filter(
@@ -133,21 +137,20 @@ const UserContext = ({ children }) => {
   };
 
   const clearBookings = () => {
+    if (!user) return;
+
     setUser((prev) => ({
       ...prev,
       bookedTickets: [],
     }));
   };
 
-  // ======================================================
-  // 🔐 AUTH STYLE FUNCTIONS (Basic)
-  // ======================================================
+  // ==============================
+  // 🔐 AUTH STYLE
+  // ==============================
 
-  const updateProfile = (updatedData) => {
-    setUser((prev) => ({
-      ...prev,
-      ...updatedData,
-    }));
+  const login = (userData) => {
+    setUser(userData);
   };
 
   const logout = () => {
@@ -155,11 +158,16 @@ const UserContext = ({ children }) => {
     setUser(null);
   };
 
-  const login = (userData) => {
-    setUser(userData);
+  const updateProfile = (updatedData) => {
+    if (!user) return;
+
+    setUser((prev) => ({
+      ...prev,
+      ...updatedData,
+    }));
   };
 
-  // ======================================================
+  // ==============================
 
   return (
     <userCon.Provider
@@ -167,13 +175,13 @@ const UserContext = ({ children }) => {
         user,
         setUser,
 
-        // Favourite
+        // Favourites
         addFavourite,
         removeFavourite,
         toggleFavourite,
         clearFavourites,
 
-        // Booking
+        // Bookings
         bookTicket,
         cancelBooking,
         removeBooking,

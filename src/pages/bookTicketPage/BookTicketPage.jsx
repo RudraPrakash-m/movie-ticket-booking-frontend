@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { TheaterLayoutContext } from "../../contexts/theaterLayoutContext/TheaterLayoutProvider";
 import TheaterLayout from "../../components/TheaterLayout/TheaterLayout";
 
 const BookTicketPage = () => {
   const location = useLocation();
+  const navigate = useNavigate()
   const { movie, selectedDate } = location.state || {};
 
   const { theaterLayouts } = useContext(TheaterLayoutContext);
@@ -187,6 +188,7 @@ const BookTicketPage = () => {
             <button
               disabled={selectedSeats.length === 0}
               className="w-full mt-8 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 py-3 rounded-lg font-semibold transition"
+              onClick={()=>navigate("/payment")}
             >
               Proceed to Payment
             </button>

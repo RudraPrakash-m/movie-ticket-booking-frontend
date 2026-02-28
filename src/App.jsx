@@ -14,6 +14,8 @@ import SearchPage from "./pages/searchPage/SearchPage";
 import AboutMoviePage from "./pages/aboutMoviePage/AboutMoviePage";
 import BookTicketPage from "./pages/bookTicketPage/BookTicketPage";
 import TheaterLayoutProvider from "./contexts/theaterLayoutContext/TheaterLayoutProvider";
+import ProtectedRouting from "./routing/protectedRouting/ProtectedRouting";
+import PaymentPage from "./pages/paymentPage/PaymentPage";
 
 const App = () => {
   const routes = createBrowserRouter([
@@ -67,6 +69,14 @@ const App = () => {
     {
       path: "/forgot-password",
       element: <ForgotPassword />,
+    },
+    {
+      path: "/payment",
+      element: (
+        <ProtectedRouting>
+          <PaymentPage />
+        </ProtectedRouting>
+      ),
     },
   ]);
 
