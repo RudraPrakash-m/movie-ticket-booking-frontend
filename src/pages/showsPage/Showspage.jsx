@@ -1,10 +1,13 @@
 import React, { useContext, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { allMovies } from "../../contexts/allMoviesContext/AllMoviesContext";
-import { X } from "lucide-react";
+import { X, Heart } from "lucide-react";
+import { userCon } from "../../contexts/userContext/UserContext";
 
 const Showspage = () => {
   const { movies } = useContext(allMovies);
+  const { user, toggleFavourite } = useContext(userCon);
+
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
@@ -13,34 +16,32 @@ const Showspage = () => {
   const [sortBy, setSortBy] = useState("latest");
   const [trailerMovie, setTrailerMovie] = useState(null);
 
-  // ✅ Extract genres
   const genres = useMemo(() => {
     const allGenres = movies.flatMap((m) => m.genres);
     return ["All", ...new Set(allGenres)];
   }, [movies]);
 
-  // ✅ Filtering Logic
   const filteredMovies = useMemo(() => {
     let result = [...movies];
 
-    // Status filter
     if (selectedStatus !== "All") {
-      result = result.filter((m) => m.status?.toLowerCase() === selectedStatus);
-    }
-
-    // Search
-    if (search) {
-      result = result.filter((m) =>
-        m.title.toLowerCase().includes(search.toLowerCase()),
+      result = result.filter(
+        (m) => m.status?.toLowerCase() === selectedStatus
       );
     }
 
-    // Genre
-    if (selectedGenre !== "All") {
-      result = result.filter((m) => m.genres.includes(selectedGenre));
+    if (search) {
+      result = result.filter((m) =>
+        m.title.toLowerCase().includes(search.toLowerCase())
+      );
     }
 
-    // Sorting
+    if (selectedGenre !== "All") {
+      result = result.filter((m) =>
+        m.genres.includes(selectedGenre)
+      );
+    }
+
     if (sortBy === "latest") {
       result.sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt));
     } else if (sortBy === "rating") {
@@ -55,7 +56,6 @@ const Showspage = () => {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white pt-24 px-6 md:px-16 pb-14">
-      {/* TITLE */}
       <h1 className="text-4xl font-bold mb-8">Browse Shows</h1>
 
       {/* STATUS FILTER */}
@@ -77,7 +77,6 @@ const Showspage = () => {
 
       {/* FILTER BAR */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12 w-full">
-        {/* GENRE PILLS */}
         <div className="flex gap-3 overflow-x-auto scrollbar-hide whitespace-nowrap w-full lg:w-auto">
           {genres.map((genre) => (
             <button
@@ -94,7 +93,6 @@ const Showspage = () => {
           ))}
         </div>
 
-        {/* SEARCH + SORT */}
         <div className="flex gap-4 flex-col sm:flex-row w-full lg:w-auto">
           <input
             type="text"
@@ -118,69 +116,88 @@ const Showspage = () => {
 
       {/* MOVIE GRID */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        {filteredMovies.map((movie) => (
-          <div
-            key={movie.id}
-            className="bg-gray-900 rounded-lg overflow-hidden shadow hover:scale-105 transition duration-300"
-          >
-            {/* Poster + Coming Soon Badge */}
-            <div className="relative">
-              <img
-                src={movie.poster}
-                alt={movie.title}
-                className="w-full h-64 object-cover"
-                loading="lazy"
-              />
+        {filteredMovies.map((movie) => {
+          const isFav = user?.favourites?.includes(movie.id);
 
-              {movie.status === "upcoming" && (
-                <div className="absolute top-3 left-3 bg-yellow-500 text-black text-xs font-bold px-3 py-1 rounded">
-                  Coming Soon
-                </div>
-              )}
-            </div>
+          return (
+            <div
+              key={movie.id}
+              className="bg-gray-900 rounded-lg overflow-hidden shadow hover:scale-105 transition duration-300"
+            >
+              <div className="relative">
+                <img
+                  src={movie.poster}
+                  alt={movie.title}
+                  className="w-full h-64 object-cover"
+                />
 
-            <div className="p-4">
-              <h3 className="font-semibold mb-2">{movie.title}</h3>
-
-              {/* ⭐ Only show price if released */}
-              {movie.status === "released" ? (
-                <p className="text-sm text-gray-400 mb-3">
-                  ⭐ {movie.rating} • ₹{movie.price}
-                </p>
-              ) : (
-                <p className="text-sm text-gray-400 mb-3">⭐ {movie.rating}</p>
-              )}
-
-              <div className="flex gap-2">
-                {/* Book only if released */}
-                {movie.status === "released" && (
-                  <button
-                    onClick={() =>
-                      navigate(
-                        `/booking/${movie.title
-                          .toLowerCase()
-                          .replace(/[^a-z0-9\s]/g, "")
-                          .trim()
-                          .replace(/\s+/g, "-")}`,
-                        { state: { movie } },
-                      )
-                    }
-                    className="flex-1 bg-red-600 hover:bg-red-700 py-2 rounded text-sm"
-                  >
-                    Book
-                  </button>
+                {movie.status === "upcoming" && (
+                  <div className="absolute top-3 left-3 bg-yellow-500 text-black text-xs font-bold px-3 py-1 rounded">
+                    Coming Soon
+                  </div>
                 )}
 
+                {/* ⭐ Favourite from Context */}
                 <button
-                  onClick={() => setTrailerMovie(movie)}
-                  className="flex-1 bg-gray-700 hover:bg-gray-600 py-2 rounded text-sm"
+                  onClick={() => toggleFavourite(movie.id)}
+                  className="absolute top-3 right-3 p-2 bg-black/60 rounded-full"
                 >
-                  Trailer
+                  <Heart
+                    size={18}
+                    className={
+                      isFav
+                        ? "text-red-500 fill-red-500"
+                        : "text-white hover:text-red-500"
+                    }
+                  />
                 </button>
               </div>
+
+              <div className="p-4">
+                <h3 className="font-semibold mb-2">
+                  {movie.title}
+                </h3>
+
+                {movie.status === "released" ? (
+                  <p className="text-sm text-gray-400 mb-3">
+                    ⭐ {movie.rating} • ₹{movie.price}
+                  </p>
+                ) : (
+                  <p className="text-sm text-gray-400 mb-3">
+                    ⭐ {movie.rating}
+                  </p>
+                )}
+
+                <div className="flex gap-2">
+                  {movie.status === "released" && (
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/booking/${movie.title
+                            .toLowerCase()
+                            .replace(/[^a-z0-9\s]/g, "")
+                            .trim()
+                            .replace(/\s+/g, "-")}`,
+                          { state: { movie } }
+                        )
+                      }
+                      className="flex-1 bg-red-600 hover:bg-red-700 py-2 rounded text-sm"
+                    >
+                      Book
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => setTrailerMovie(movie)}
+                    className="flex-1 bg-gray-700 hover:bg-gray-600 py-2 rounded text-sm"
+                  >
+                    Trailer
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* TRAILER MODAL */}

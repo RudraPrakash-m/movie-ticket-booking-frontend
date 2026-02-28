@@ -8,7 +8,8 @@ import Releasepage from './pages/releasePage/Releasepage'
 import Favouritepage from './pages/favouritesPage/Favouritepage'
 import MovieBooking from './pages/movieDetails/MovieBooking'
 import RootErrorPage from './pages/errorPage/RootErrorPage/RootErrorPage'
-import BookTicketPage from './pages/bookTicketPage/BookTicketPage'
+import Auth from './pages/LoginRegisterPage/Auth'
+import ForgotPassword from './pages/ForgotPassword/ForgotPassword'
 
 const App = () => {
 
@@ -39,6 +40,14 @@ const App = () => {
           element:<MovieBooking/>
         }
       ]
+    },
+    {
+      path:"/auth",
+      element:<Auth/>
+    },
+    {
+      path:"/forgot-password",
+      element:<ForgotPassword/>
     }
   ])
 
