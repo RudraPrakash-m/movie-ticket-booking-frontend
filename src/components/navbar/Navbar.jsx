@@ -131,7 +131,10 @@ const Navbar = () => {
           </NavLink>
 
           <input
-            placeholder="Search..."
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search movies..."
             className="w-full px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white outline-none"
           />
 
