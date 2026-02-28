@@ -1,7 +1,6 @@
 import React from "react";
 
 const DateSelector = ({ dates = [], selectedDate, onSelect, onBook }) => {
-
   const formatDate = (d) => {
     const date = new Date(d);
 
@@ -14,7 +13,6 @@ const DateSelector = ({ dates = [], selectedDate, onSelect, onBook }) => {
 
   return (
     <div className="bg-gray-900 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-
       {/* dates */}
       <div className="flex gap-3 overflow-x-auto no-scrollbar w-full md:w-auto">
         {dates.map((d, i) => {

@@ -1,6 +1,8 @@
 import React from "react";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 const Footer = () => {
+  const navigate = useNavigate();
   return (
     <footer className="bg-gray-950 text-gray-300 px-6 md:px-16 pt-14 pb-8">
       {" "}
@@ -36,11 +38,30 @@ const Footer = () => {
           <h3 className="text-white font-semibold mb-4">Quick Links</h3>{" "}
           <ul className="space-y-2 text-sm">
             {" "}
-            <li className="hover:text-white cursor-pointer">Movies</li>{" "}
-            <li className="hover:text-white cursor-pointer">Shows</li>{" "}
-            <li className="hover:text-white cursor-pointer">Trailers</li>{" "}
-            <li className="hover:text-white cursor-pointer">Upcoming</li>{" "}
-            <li className="hover:text-white cursor-pointer">Favourites</li>{" "}
+            <li
+              className="hover:text-white cursor-pointer"
+              onClick={() => navigate("/")}
+            >
+              Home
+            </li>{" "}
+            <li
+              className="hover:text-white cursor-pointer"
+              onClick={() => navigate("/shows")}
+            >
+              Shows
+            </li>{" "}
+            <li
+              className="hover:text-white cursor-pointer"
+              onClick={() => navigate("/release")}
+            >
+              Upcoming
+            </li>{" "}
+            <li
+              className="hover:text-white cursor-pointer"
+              onClick={() => navigate("/favourite")}
+            >
+              Favourites
+            </li>{" "}
           </ul>{" "}
         </div>{" "}
         {/* ⭐ SOCIAL */}{" "}
@@ -71,7 +92,7 @@ const Footer = () => {
       {/* ⭐ BOTTOM */}{" "}
       <div className="border-t border-gray-800 mt-12 pt-6 text-center text-sm text-gray-500">
         {" "}
-        © {new Date().getFullYear()} StreamX. All rights reserved.{" "} 
+        © {new Date().getFullYear()} StreamX. All rights reserved.{" "}
       </div>{" "}
     </footer>
   );

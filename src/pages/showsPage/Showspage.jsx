@@ -1,8 +1,16 @@
 import React, { useContext, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { allMovies } from "../../contexts/allMoviesContext/AllMoviesContext";
-import { X, Heart } from "lucide-react";
 import { userCon } from "../../contexts/userContext/UserContext";
+import { X, Heart } from "lucide-react";
+
+/* 🔥 Utility: Slug Generator (use everywhere) */
+const createSlug = (title) =>
+  title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
 
 const Showspage = () => {
   const { movies } = useContext(allMovies);
@@ -16,30 +24,28 @@ const Showspage = () => {
   const [sortBy, setSortBy] = useState("latest");
   const [trailerMovie, setTrailerMovie] = useState(null);
 
+  /* 🔥 Generate Genres */
   const genres = useMemo(() => {
     const allGenres = movies.flatMap((m) => m.genres);
     return ["All", ...new Set(allGenres)];
   }, [movies]);
 
+  /* 🔥 Filtering Logic */
   const filteredMovies = useMemo(() => {
     let result = [...movies];
 
     if (selectedStatus !== "All") {
-      result = result.filter(
-        (m) => m.status?.toLowerCase() === selectedStatus
-      );
+      result = result.filter((m) => m.status?.toLowerCase() === selectedStatus);
     }
 
     if (search) {
       result = result.filter((m) =>
-        m.title.toLowerCase().includes(search.toLowerCase())
+        m.title.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
     if (selectedGenre !== "All") {
-      result = result.filter((m) =>
-        m.genres.includes(selectedGenre)
-      );
+      result = result.filter((m) => m.genres.includes(selectedGenre));
     }
 
     if (sortBy === "latest") {
@@ -122,7 +128,10 @@ const Showspage = () => {
           return (
             <div
               key={movie.id}
-              className="bg-gray-900 rounded-lg overflow-hidden shadow hover:scale-105 transition duration-300"
+              onClick={() =>
+                navigate(`/about-movie/${createSlug(movie.title)}`, {state:{movie}})
+              }
+              className="bg-gray-900 rounded-lg overflow-hidden shadow hover:scale-105 transition duration-300 cursor-pointer"
             >
               <div className="relative">
                 <img
@@ -137,9 +146,12 @@ const Showspage = () => {
                   </div>
                 )}
 
-                {/* ⭐ Favourite from Context */}
+                {/* ⭐ Favourite */}
                 <button
-                  onClick={() => toggleFavourite(movie.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavourite(movie.id);
+                  }}
                   className="absolute top-3 right-3 p-2 bg-black/60 rounded-full"
                 >
                   <Heart
@@ -154,9 +166,7 @@ const Showspage = () => {
               </div>
 
               <div className="p-4">
-                <h3 className="font-semibold mb-2">
-                  {movie.title}
-                </h3>
+                <h3 className="font-semibold mb-2">{movie.title}</h3>
 
                 {movie.status === "released" ? (
                   <p className="text-sm text-gray-400 mb-3">
@@ -171,16 +181,10 @@ const Showspage = () => {
                 <div className="flex gap-2">
                   {movie.status === "released" && (
                     <button
-                      onClick={() =>
-                        navigate(
-                          `/booking/${movie.title
-                            .toLowerCase()
-                            .replace(/[^a-z0-9\s]/g, "")
-                            .trim()
-                            .replace(/\s+/g, "-")}`,
-                          { state: { movie } }
-                        )
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/booking/${createSlug(movie.title)}`, {state:{movie}});
+                      }}
                       className="flex-1 bg-red-600 hover:bg-red-700 py-2 rounded text-sm"
                     >
                       Book
@@ -188,7 +192,10 @@ const Showspage = () => {
                   )}
 
                   <button
-                    onClick={() => setTrailerMovie(movie)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setTrailerMovie(movie);
+                    }}
                     className="flex-1 bg-gray-700 hover:bg-gray-600 py-2 rounded text-sm"
                   >
                     Trailer

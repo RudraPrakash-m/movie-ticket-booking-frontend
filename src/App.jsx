@@ -11,6 +11,7 @@ import RootErrorPage from "./pages/errorPage/RootErrorPage/RootErrorPage";
 import Auth from "./pages/LoginRegisterPage/Auth";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import SearchPage from "./pages/searchPage/SearchPage";
+import AboutMoviePage from "./pages/aboutMoviePage/AboutMoviePage";
 
 const App = () => {
   const routes = createBrowserRouter([
@@ -43,6 +44,10 @@ const App = () => {
           path: "/search",
           element: <SearchPage />,
         },
+        {
+          path:"/about-movie/:slug",
+          element:<AboutMoviePage/>
+        }
       ],
     },
     {

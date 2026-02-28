@@ -1,28 +1,38 @@
 import React, { useContext, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { allMovies } from "../../contexts/allMoviesContext/AllMoviesContext";
 import { Heart } from "lucide-react";
 import { userCon } from "../../contexts/userContext/UserContext";
 
+/* 🔥 Slug Generator */
+const createSlug = (title) =>
+  title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+
 const Releasepage = () => {
   const { movies } = useContext(allMovies);
   const { user, toggleFavourite } = useContext(userCon);
+  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("All");
   const [sortBy, setSortBy] = useState("latest");
 
-  // ✅ Only upcoming movies
+  /* ✅ Only upcoming movies */
   const upcomingMovies = useMemo(() => {
     return movies.filter((m) => m.status?.toLowerCase() === "upcoming");
   }, [movies]);
 
-  // ✅ Extract genres
+  /* ✅ Extract genres */
   const genres = useMemo(() => {
     const allGenres = upcomingMovies.flatMap((m) => m.genres);
     return ["All", ...new Set(allGenres)];
   }, [upcomingMovies]);
 
-  // ✅ Filter + Search + Sort
+  /* ✅ Filter + Search + Sort */
   const filteredMovies = useMemo(() => {
     let result = [...upcomingMovies];
 
@@ -102,7 +112,12 @@ const Releasepage = () => {
           return (
             <div
               key={movie.id}
-              className="bg-gray-900 rounded-lg overflow-hidden shadow hover:scale-105 transition duration-300"
+              onClick={() =>
+                navigate(`/about-movie/${createSlug(movie.title)}`, {
+                  state: { movie },
+                })
+              }
+              className="bg-gray-900 rounded-lg overflow-hidden shadow hover:scale-105 transition duration-300 cursor-pointer"
             >
               <div className="relative">
                 <img
@@ -115,9 +130,12 @@ const Releasepage = () => {
                   Coming Soon
                 </div>
 
-                {/* ⭐ Favourite from Context */}
+                {/* ⭐ Favourite */}
                 <button
-                  onClick={() => toggleFavourite(movie.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavourite(movie.id);
+                  }}
                   className="absolute top-3 right-3 p-2 bg-black/60 rounded-full"
                 >
                   <Heart
