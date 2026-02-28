@@ -1,10 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
+import { TheaterLayoutContext } from "../../contexts/theaterLayoutContext/TheaterLayoutProvider";
 import TheaterLayout from "../../components/TheaterLayout/TheaterLayout";
 
 const BookTicketPage = () => {
   const location = useLocation();
   const { movie, selectedDate } = location.state || {};
+
+  const { theaterLayouts } = useContext(TheaterLayoutContext);
 
   const [selectedShow, setSelectedShow] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -24,8 +27,13 @@ const BookTicketPage = () => {
     (show) => show.date === selectedDate,
   );
 
+  const selectedScreen = theaterLayouts.find(
+    (screen) => screen.id === selectedShow?.screenId,
+  );
+
   const totalPrice = selectedSeats.length * (selectedShow?.price || 0);
 
+  // Scroll to top on mount
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -34,7 +42,7 @@ const BookTicketPage = () => {
     });
   }, []);
 
-  // Smooth scroll only (no animation glitch)
+  // Smooth scroll to theater section
   useEffect(() => {
     if (selectedShow) {
       setLoadingSeats(true);
@@ -55,7 +63,6 @@ const BookTicketPage = () => {
     <div className="min-h-screen bg-black text-white px-6 md:px-16 pt-28 pb-16">
       {/* ================= MOVIE HEADER ================= */}
       <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10 mb-14">
-        {/* Poster */}
         <div>
           <img
             src={movie.poster}
@@ -64,7 +71,6 @@ const BookTicketPage = () => {
           />
         </div>
 
-        {/* Info */}
         <div className="md:col-span-2">
           <h1 className="text-4xl font-bold mb-4">{movie.title}</h1>
 
@@ -74,7 +80,6 @@ const BookTicketPage = () => {
 
           <p className="text-gray-500 mb-6">{movie.genres.join(" • ")}</p>
 
-          {/* Show Times */}
           <div className="flex gap-4 flex-wrap">
             {availableShows.map((show, index) => (
               <button
@@ -106,7 +111,7 @@ const BookTicketPage = () => {
       </div>
 
       {/* ================= THEATER SECTION ================= */}
-      {selectedShow && (
+      {selectedShow && selectedScreen && (
         <div
           ref={theaterRef}
           className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-10 mt-10"
@@ -125,6 +130,9 @@ const BookTicketPage = () => {
                   selectedShow={selectedShow}
                   selectedSeats={selectedSeats}
                   setSelectedSeats={setSelectedSeats}
+                  rows={selectedScreen.rows}
+                  seatsPerRow={selectedScreen.seatsPerRow}
+                  screenName={selectedScreen.name}
                 />
 
                 {/* Legend */}
@@ -148,11 +156,16 @@ const BookTicketPage = () => {
             )}
           </div>
 
-          {/* Summary Card */}
+          {/* Summary */}
           <div className="bg-gray-900 p-8 rounded-2xl border border-gray-800 h-fit sticky top-32 shadow-xl">
             <h3 className="text-xl font-semibold mb-6">Booking Summary</h3>
 
             <div className="space-y-4 text-gray-400 text-sm">
+              <div>
+                <p>Screen</p>
+                <p className="text-white font-medium">{selectedScreen.name}</p>
+              </div>
+
               <div>
                 <p>Show Time</p>
                 <p className="text-white font-medium">{selectedShow.time}</p>

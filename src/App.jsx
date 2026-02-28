@@ -13,6 +13,7 @@ import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import SearchPage from "./pages/searchPage/SearchPage";
 import AboutMoviePage from "./pages/aboutMoviePage/AboutMoviePage";
 import BookTicketPage from "./pages/bookTicketPage/BookTicketPage";
+import TheaterLayoutProvider from "./contexts/theaterLayoutContext/TheaterLayoutProvider";
 
 const App = () => {
   const routes = createBrowserRouter([
@@ -46,13 +47,17 @@ const App = () => {
           element: <SearchPage />,
         },
         {
-          path:"/about-movie/:slug",
-          element:<AboutMoviePage/>
+          path: "/about-movie/:slug",
+          element: <AboutMoviePage />,
         },
         {
-          path:"/book-ticket",
-          element:<BookTicketPage/>
-        }
+          path: "/book-ticket",
+          element: (
+            <TheaterLayoutProvider>
+              <BookTicketPage />
+            </TheaterLayoutProvider>
+          ),
+        },
       ],
     },
     {
