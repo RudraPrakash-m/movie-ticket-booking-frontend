@@ -14,22 +14,23 @@ const Navbar = () => {
       const trimmed = searchTerm.trim();
 
       if (trimmed !== "") {
-        // Navigate only if not already on search page
-        if (location.pathname !== "/search") {
-          navigate(`/search?q=${trimmed}`);
-        } else {
-          navigate(`/search?q=${trimmed}`, { replace: true });
-        }
+        navigate(`/search?q=${trimmed}`, { replace: true });
       } else {
-        // If input becomes empty and currently on search page
-        if (location.pathname === "/search") {
+        // Only go home if we are currently on search page
+        if (location.pathname.startsWith("/search")) {
           navigate("/", { replace: true });
         }
       }
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, location.pathname]);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (!location.pathname.startsWith("/search")) {
+      setSearchTerm("");
+    }
+  }, [location.pathname]);
 
   const navLinkStyle = ({ isActive }) =>
     `px-4 py-2 rounded-full text-sm transition-all ${
