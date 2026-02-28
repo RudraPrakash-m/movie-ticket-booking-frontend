@@ -12,6 +12,7 @@ import Auth from "./pages/LoginRegisterPage/Auth";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import SearchPage from "./pages/searchPage/SearchPage";
 import AboutMoviePage from "./pages/aboutMoviePage/AboutMoviePage";
+import BookTicketPage from "./pages/bookTicketPage/BookTicketPage";
 
 const App = () => {
   const routes = createBrowserRouter([
@@ -47,6 +48,10 @@ const App = () => {
         {
           path:"/about-movie/:slug",
           element:<AboutMoviePage/>
+        },
+        {
+          path:"/book-ticket",
+          element:<BookTicketPage/>
         }
       ],
     },

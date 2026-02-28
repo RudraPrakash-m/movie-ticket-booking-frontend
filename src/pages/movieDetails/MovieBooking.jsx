@@ -137,6 +137,7 @@ const MovieBooking = () => {
             dates={dates}
             selectedDate={selectedDate}
             onSelect={setSelectedDate}
+            movie={movie}
           />
         </div>
       </section>

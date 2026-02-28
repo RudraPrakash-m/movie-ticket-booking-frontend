@@ -1,9 +1,9 @@
-import React, { createContext } from "react";
+import React, { createContext, useState } from "react";
 
 export const allMovies = createContext();
 
 const AllMoviesContext = ({ children }) => {
-  const movies = [
+  const [movies, setMovies] = useState([
     {
       id: 1,
       title: "Zootopia 2",
@@ -396,8 +396,13 @@ const AllMoviesContext = ({ children }) => {
         },
       ],
     },
-  ];
-  return <allMovies.Provider value={{ movies }}>{children}</allMovies.Provider>;
+  ]);
+
+  return (
+    <allMovies.Provider value={{ movies, setMovies }}>
+      {children}
+    </allMovies.Provider>
+  );
 };
 
 export default AllMoviesContext;

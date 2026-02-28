@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const DateSelector = ({ dates = [], selectedDate, onSelect, onBook }) => {
+const DateSelector = ({ dates = [], selectedDate, onSelect, movie }) => {
+  const navigate = useNavigate();
+
   const formatDate = (d) => {
     const date = new Date(d);
 
@@ -11,9 +14,20 @@ const DateSelector = ({ dates = [], selectedDate, onSelect, onBook }) => {
     };
   };
 
+  const handleBook = () => {
+    if (!selectedDate) return;
+
+    navigate("/book-ticket", {
+      state: {
+        movie,
+        selectedDate,
+      },
+    });
+  };
+
   return (
     <div className="bg-gray-900 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-      {/* dates */}
+      {/* Dates */}
       <div className="flex gap-3 overflow-x-auto no-scrollbar w-full md:w-auto">
         {dates.map((d, i) => {
           const f = formatDate(d);
@@ -37,10 +51,11 @@ const DateSelector = ({ dates = [], selectedDate, onSelect, onBook }) => {
         })}
       </div>
 
-      {/* book button */}
+      {/* Book Button */}
       <button
-        onClick={() => onBook?.(selectedDate)}
-        className="px-6 py-2.5 bg-red-600 hover:bg-red-700 rounded-md font-semibold whitespace-nowrap"
+        disabled={!selectedDate}
+        onClick={handleBook}
+        className="px-6 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 rounded-md font-semibold whitespace-nowrap"
       >
         Book Now
       </button>
