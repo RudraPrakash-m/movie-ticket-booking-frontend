@@ -129,7 +129,9 @@ const Showspage = () => {
             <div
               key={movie.id}
               onClick={() =>
-                navigate(`/about-movie/${createSlug(movie.title)}`, {state:{movie}})
+                navigate(`/about-movie/${createSlug(movie.title)}`, {
+                  state: { movie },
+                })
               }
               className="bg-gray-900 rounded-lg overflow-hidden shadow hover:scale-105 transition duration-300 cursor-pointer"
             >
@@ -183,7 +185,9 @@ const Showspage = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/booking/${createSlug(movie.title)}`, {state:{movie}});
+                        navigate(`/booking/${createSlug(movie.title)}`, {
+                          state: { movie },
+                        });
                       }}
                       className="flex-1 bg-red-600 hover:bg-red-700 py-2 rounded text-sm"
                     >

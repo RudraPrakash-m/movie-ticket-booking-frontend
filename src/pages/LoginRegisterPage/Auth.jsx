@@ -1,16 +1,15 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { userCon } from "../../contexts/userContext/UserContext";
 
 export default function Auth() {
   const navigate = useNavigate();
+  const { login, register } = useContext(userCon);
 
-  const TEST_OTP = "123456"; // Demo OTP for testing
+  const TEST_OTP = "123456";
 
   const [isRegister, setIsRegister] = useState(false);
   const [step, setStep] = useState(1);
-  // step 1 = form
-  // step 2 = OTP verification
 
   const [formData, setFormData] = useState({
     name: "",
@@ -52,21 +51,13 @@ export default function Auth() {
       setLoading(true);
 
       if (isRegister) {
-        // Go to OTP verification instead of registering immediately
         setStep(2);
       } else {
-        const res = await axios.post(
-          "http://localhost:5000/api/login",
-          formData,
-        );
-
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-
-        navigate("/dashboard");
+        await login(formData.email, formData.password);
+        navigate("/");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong");
+      setError(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -84,21 +75,18 @@ export default function Auth() {
     try {
       setLoading(true);
 
-      await axios.post("http://localhost:5000/api/register", formData);
+      await register(formData);
 
-      alert("Registration successful");
+      // auto login after register
+      await login(formData.email, formData.password);
 
-      setIsRegister(false);
-      setStep(1);
-      setOtp("");
-      setFormData({ name: "", email: "", password: "" });
+      navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
       {/* Background glow */}

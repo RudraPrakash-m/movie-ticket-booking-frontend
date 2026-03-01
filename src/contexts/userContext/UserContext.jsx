@@ -1,85 +1,105 @@
 import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 export const userCon = createContext();
 
-const demoUser = {
-  id: "u_001",
-  name: "Rudra Prakash Mallick",
-  email: "rudra@email.com",
-  role: "user",
-  favourites: [],
-  bookedTickets: [],
-  createdAt: "2026-01-01",
-};
+axios.defaults.withCredentials = true;
 
 const UserContext = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    // const stored = localStorage.getItem("userData");
-    // return stored ? JSON.parse(stored) : null;
-    return null;
-    // For now demo user auto loads
-    // Later change demoUser → null for real auth
-  });
-
-  // Persist user
-  // useEffect(() => {
-  //   if (user) {
-  //     localStorage.setItem("userData", JSON.stringify(user));
-  //   }
-  // }, [user]);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
+  const API = import.meta.env.VITE_API_URL;
 
   // ==============================
-  // ❤️ FAVOURITES
+  // 🔐 AUTH
   // ==============================
 
-  const addFavourite = (movieId) => {
-    if (!user) return;
-
-    setUser((prev) => {
-      if (prev.favourites.includes(movieId)) return prev;
-
-      return {
-        ...prev,
-        favourites: [...prev.favourites, movieId],
-      };
-    });
+  const fetchMe = async () => {
+    try {
+      const res = await axios.get(`${API}/api/me`);
+      setUser(res.data.data);
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
+      setAuthLoading(false);
+    }
   };
 
-  const removeFavourite = (movieId) => {
-    if (!user) return;
+  useEffect(() => {
+    fetchMe();
+  }, []);
 
+  const login = async (email, password) => {
+    await axios.post(`${API}/api/login`, {
+      email,
+      password,
+    });
+
+    await fetchMe();
+  };
+
+  const register = async (data) => {
+    await axios.post(`${API}/api/register`, data);
+  };
+
+  const logout = async () => {
+    await axios.post(`${API}/api/logout`);
+    setUser(null);
+  };
+
+  const updateProfile = (updatedData) => {
     setUser((prev) => ({
       ...prev,
-      favourites: prev.favourites.filter((id) => id !== movieId),
-    }));
-  };
-
-  const toggleFavourite = (movieId) => {
-    if (!user) return;
-
-    setUser((prev) => {
-      const isFav = prev.favourites.includes(movieId);
-
-      return {
-        ...prev,
-        favourites: isFav
-          ? prev.favourites.filter((id) => id !== movieId)
-          : [...prev.favourites, movieId],
-      };
-    });
-  };
-
-  const clearFavourites = () => {
-    if (!user) return;
-
-    setUser((prev) => ({
-      ...prev,
-      favourites: [],
+      ...updatedData,
     }));
   };
 
   // ==============================
-  // 🎟 BOOKINGS
+  // ❤️ FAVOURITES (Frontend only for now)
+  // ==============================
+
+  const toggleFavourite = async (movieId) => {
+    // console.log(movieId, typeof(movieId));
+
+    if (!user) return;
+
+    try {
+      const res = await axios.patch(
+        `${API}/api/user/toggle-favourite`,
+        { movieId },
+        { withCredentials: true },
+      );
+
+      const { action } = res.data;
+
+      setUser((prev) => {
+        if (!prev) return prev;
+
+        if (action === "removed") {
+          return {
+            ...prev,
+            favourites: prev.favourites.filter((id) => id !== movieId),
+          };
+        }
+
+        if (action === "added") {
+          return {
+            ...prev,
+            favourites: [...prev.favourites, movieId],
+          };
+        }
+
+        return prev;
+      });
+    } catch (error) {
+      console.error("Toggle favourite failed:", error.response?.data?.message);
+    }
+  };
+
+  // ==============================
+  // 🎟 BOOKINGS (Frontend demo logic)
   // ==============================
 
   const bookTicket = ({
@@ -108,89 +128,22 @@ const UserContext = ({ children }) => {
 
     setUser((prev) => ({
       ...prev,
-      bookedTickets: [...prev.bookedTickets, newBooking],
+      bookedTickets: [...(prev.bookedTickets || []), newBooking],
     }));
   };
-
-  const cancelBooking = (bookingId) => {
-    if (!user) return;
-
-    setUser((prev) => ({
-      ...prev,
-      bookedTickets: prev.bookedTickets.map((booking) =>
-        booking.bookingId === bookingId
-          ? { ...booking, bookingStatus: "cancelled" }
-          : booking,
-      ),
-    }));
-  };
-
-  const removeBooking = (bookingId) => {
-    if (!user) return;
-
-    setUser((prev) => ({
-      ...prev,
-      bookedTickets: prev.bookedTickets.filter(
-        (booking) => booking.bookingId !== bookingId,
-      ),
-    }));
-  };
-
-  const clearBookings = () => {
-    if (!user) return;
-
-    setUser((prev) => ({
-      ...prev,
-      bookedTickets: [],
-    }));
-  };
-
-  // ==============================
-  // 🔐 AUTH STYLE
-  // ==============================
-
-  const login = (userData) => {
-    setUser(userData);
-  };
-
-  const logout = () => {
-    // localStorage.removeItem("userData");
-    setUser(null);
-  };
-
-  const updateProfile = (updatedData) => {
-    if (!user) return;
-
-    setUser((prev) => ({
-      ...prev,
-      ...updatedData,
-    }));
-  };
-
-  // ==============================
 
   return (
     <userCon.Provider
       value={{
         user,
-        setUser,
-
-        // Favourites
-        addFavourite,
-        removeFavourite,
-        toggleFavourite,
-        clearFavourites,
-
-        // Bookings
-        bookTicket,
-        cancelBooking,
-        removeBooking,
-        clearBookings,
-
-        // Auth
+        loading,
         login,
+        register,
         logout,
         updateProfile,
+        toggleFavourite,
+        bookTicket,
+        authLoading,
       }}
     >
       {children}

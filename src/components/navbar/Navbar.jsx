@@ -139,6 +139,8 @@ const Navbar = () => {
                   <button
                     onClick={() => {
                       logout();
+                      // console.log("logout clicked");
+                      
                       navigate("/");
                       setProfileOpen(false);
                     }}

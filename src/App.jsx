@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainLayout from "./layouts/mainLayout/MainLayout";
@@ -17,8 +17,11 @@ import TheaterLayoutProvider from "./contexts/theaterLayoutContext/TheaterLayout
 import ProtectedRouting from "./routing/protectedRouting/ProtectedRouting";
 import PaymentPage from "./pages/paymentPage/PaymentPage";
 import MyBookings from "./pages/myBookings/MyBookings";
+import LoadingPage from "./pages/loadingPage/LoadingPage";
+import { userCon } from "./contexts/userContext/UserContext";
 
 const App = () => {
+  const { authLoading } = useContext(userCon);
   const routes = createBrowserRouter([
     {
       path: "/",
@@ -89,7 +92,9 @@ const App = () => {
     },
   ]);
 
-  return <RouterProvider router={routes}></RouterProvider>;
+  if (authLoading) return <LoadingPage/>
+
+  return <RouterProvider router={routes}></RouterProvider>
 };
 
 export default App;
