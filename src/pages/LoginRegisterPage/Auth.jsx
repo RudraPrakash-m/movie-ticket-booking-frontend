@@ -1,12 +1,11 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { userCon } from "../../contexts/userContext/UserContext";
 
 export default function Auth() {
   const navigate = useNavigate();
   const { login, register } = useContext(userCon);
-
-  const TEST_OTP = "123456";
 
   const [isRegister, setIsRegister] = useState(false);
   const [step, setStep] = useState(1);
@@ -21,6 +20,9 @@ export default function Auth() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // -------------------------------
+  // Handle Input Change
+  // -------------------------------
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -28,13 +30,24 @@ export default function Auth() {
     });
   };
 
+  // -------------------------------
+  // Toggle Login / Register
+  // -------------------------------
   const toggleMode = () => {
     setIsRegister(!isRegister);
     setStep(1);
     setError("");
     setOtp("");
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+    });
   };
 
+  // -------------------------------
+  // Handle Form Submit (Login/Register)
+  // -------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -51,45 +64,66 @@ export default function Auth() {
       setLoading(true);
 
       if (isRegister) {
+        await register(formData);
         setStep(2);
       } else {
-        await login(formData.email, formData.password);
-        navigate("/");
+        try {
+          await login(formData.email, formData.password);
+          navigate("/");
+        } catch (err) {
+          if (err.response?.data?.requiresOtp) {
+            setStep(2);
+            return;
+          }
+
+          setError(err.response?.data?.message || "Login failed");
+        }
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
+  // -------------------------------
+  // Handle OTP Verification
+  // -------------------------------
   const handleVerifyOtp = async () => {
     setError("");
 
-    if (!otp) return setError("Enter OTP");
-
-    if (otp !== TEST_OTP) {
-      return setError("Invalid OTP");
+    if (!otp) {
+      return setError("Enter OTP");
     }
 
     try {
       setLoading(true);
 
-      await register(formData);
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/verify-otp`,
+        {
+          email: formData.email,
+          otp,
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
-      // auto login after register
+      // After successful verification → login automatically
       await login(formData.email, formData.password);
 
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(err.response?.data?.message || "OTP verification failed");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
-      {/* Background glow */}
+      {/* Background Glow */}
       <div className="absolute w-[600px] h-[600px] bg-red-600/20 blur-[120px] rounded-full -top-40 -left-40"></div>
       <div className="absolute w-[500px] h-[500px] bg-blue-600/20 blur-[120px] rounded-full -bottom-40 -right-40"></div>
 
@@ -161,7 +195,6 @@ export default function Auth() {
               />
             </div>
 
-            {/* Forgot Password (Login only) */}
             {!isRegister && (
               <div className="text-right text-sm">
                 <button
@@ -193,8 +226,6 @@ export default function Auth() {
           <div className="space-y-5">
             <p className="text-sm text-gray-400 text-center">
               Enter the OTP sent to your email
-              <br />
-              <span className="text-red-400">(Demo OTP: 123456)</span>
             </p>
 
             <input
@@ -222,7 +253,7 @@ export default function Auth() {
           </div>
         )}
 
-        {/* Toggle (only on form step) */}
+        {/* Toggle */}
         {step === 1 && (
           <div className="text-center mt-6 text-sm text-gray-400">
             {isRegister ? (

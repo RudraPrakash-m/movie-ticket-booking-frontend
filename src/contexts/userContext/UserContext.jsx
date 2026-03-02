@@ -32,16 +32,32 @@ const UserContext = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    await axios.post(`${API}/api/login`, {
-      email,
-      password,
-    });
+  try {
+    const res = await axios.post(
+      `${API}/api/login`,
+      { email, password },
+      { withCredentials: true }
+    );
 
     await fetchMe();
-  };
+    return res.data;
+
+  } catch (err) {
+    // 🔥 If backend says OTP required
+    if (err.response?.data?.requiresOtp) {
+      throw err; // Let Auth.jsx handle showing OTP
+    }
+
+    // All other errors (401, 404 etc)
+    throw err;
+  }
+};
 
   const register = async (data) => {
-    await axios.post(`${API}/api/register`, data);
+    // console.log(data);
+    return axios.post(`${API}/api/register`, data, {
+      withCredentials: true,
+    });
   };
 
   const logout = async () => {
