@@ -15,6 +15,8 @@ const Navbar = () => {
 
   const closeTimeoutRef = useRef(null);
 
+  const isAdmin = user?.role === "admin";
+
   // Scroll background effect
   useEffect(() => {
     const handleScroll = () => {
@@ -38,7 +40,7 @@ const Navbar = () => {
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, navigate, location.pathname]);
 
   // Clear search if not on search page
   useEffect(() => {
@@ -52,7 +54,6 @@ const Navbar = () => {
       isActive ? "bg-white text-black shadow" : "text-white hover:bg-white/20"
     }`;
 
-  // Profile dropdown handlers
   const handleMouseEnter = () => {
     clearTimeout(closeTimeoutRef.current);
     setProfileOpen(true);
@@ -73,7 +74,6 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 py-5 flex items-center justify-between">
-        {/* Logo */}
         <Link
           to="/"
           className="text-3xl font-bold text-red-500 hover:text-white transition"
@@ -99,7 +99,6 @@ const Navbar = () => {
 
         {/* Right Section */}
         <div className="hidden md:flex items-center gap-4">
-          {/* Search */}
           <input
             type="text"
             value={searchTerm}
@@ -108,14 +107,12 @@ const Navbar = () => {
             className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-red-500 transition w-48 md:w-56"
           />
 
-          {/* Profile or Login */}
           {user ? (
             <div
               className="relative"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              {/* Compact Profile Button */}
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-sm cursor-pointer hover:bg-white/20 transition">
                 <div className="w-7 h-7 flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-semibold">
                   {user.name?.charAt(0).toUpperCase()}
@@ -123,9 +120,21 @@ const Navbar = () => {
                 <span className="max-w-[80px] truncate">{user.name}</span>
               </div>
 
-              {/* Dropdown */}
               {profileOpen && (
                 <div className="absolute right-0 mt-2 w-44 bg-gray-900 border border-white/10 rounded-xl shadow-xl py-2 backdrop-blur-md">
+                  {/* ✅ Admin Dashboard Button */}
+                  {isAdmin && (
+                    <button
+                      onClick={() => {
+                        navigate("/admin");
+                        setProfileOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-blue-400 hover:bg-white/10 transition text-sm"
+                    >
+                      Admin Dashboard
+                    </button>
+                  )}
+
                   <button
                     onClick={() => {
                       navigate("/my-bookings");
@@ -139,8 +148,6 @@ const Navbar = () => {
                   <button
                     onClick={() => {
                       logout();
-                      // console.log("logout clicked");
-                      
                       navigate("/");
                       setProfileOpen(false);
                     }}
@@ -200,12 +207,23 @@ const Navbar = () => {
 
           {user ? (
             <>
+              {/* ✅ Admin Button Mobile */}
+              {isAdmin && (
+                <button
+                  onClick={() => navigate("/admin")}
+                  className="w-full text-left px-4 py-2 text-blue-400"
+                >
+                  Admin Dashboard
+                </button>
+              )}
+
               <button
                 onClick={() => navigate("/my-bookings")}
                 className="w-full text-left px-4 py-2 text-white"
               >
                 My Bookings
               </button>
+
               <button
                 onClick={() => {
                   logout();

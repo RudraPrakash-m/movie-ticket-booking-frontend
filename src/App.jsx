@@ -19,6 +19,16 @@ import PaymentPage from "./pages/paymentPage/PaymentPage";
 import MyBookings from "./pages/myBookings/MyBookings";
 import LoadingPage from "./pages/loadingPage/LoadingPage";
 import { userCon } from "./contexts/userContext/UserContext";
+import AdminPage from "./Admin-Dashboard/adminPage/AdminPage";
+import AdminRouting from "./routing/adminRouting/AdminRouting";
+import AdminLayout from "./layouts/adminLayout/AdminLayout";
+import AdminDashboard from "./Admin-Dashboard/adminSidebarPages/AdminDashboard";
+import AdminMovieAdd from "./Admin-Dashboard/adminSidebarPages/AdminMovieAdd";
+import AdminSeeUsers from "./Admin-Dashboard/adminSidebarPages/AdminSeeUsers";
+import AdminSeeBookings from "./Admin-Dashboard/adminSidebarPages/AdminSeeBookings";
+import AdminSettings from "./Admin-Dashboard/adminSidebarPages/AdminSettings";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const { authLoading } = useContext(userCon);
@@ -90,11 +100,46 @@ const App = () => {
         </ProtectedRouting>
       ),
     },
+    {
+      path: "/admin",
+      element: (
+        <AdminRouting>
+          <AdminLayout />
+        </AdminRouting>
+      ),
+      children: [
+        {
+          index: true,
+          element: <AdminDashboard />,
+        },
+        {
+          path: "/admin/add-movie",
+          element: <AdminMovieAdd />,
+        },
+        {
+          path: "/admin/users",
+          element: <AdminSeeUsers />,
+        },
+        {
+          path: "/admin/bookings",
+          element: <AdminSeeBookings />,
+        },
+        {
+          path: "/admin/settings",
+          element: <AdminSettings />,
+        },
+      ],
+    },
   ]);
 
-  if (authLoading) return <LoadingPage/>
+  if (authLoading) return <LoadingPage />;
 
-  return <RouterProvider router={routes}></RouterProvider>
+  return (
+    <>
+      <ToastContainer position="top-right" autoClose={2000} />
+      <RouterProvider router={routes}></RouterProvider>
+    </>
+  );
 };
 
 export default App;

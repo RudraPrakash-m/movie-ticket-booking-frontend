@@ -172,7 +172,7 @@ const Showspage = () => {
 
                 {movie.status === "released" ? (
                   <p className="text-sm text-gray-400 mb-3">
-                    ⭐ {movie.rating} • ₹{movie.price}
+                    ⭐ {movie.rating}
                   </p>
                 ) : (
                   <p className="text-sm text-gray-400 mb-3">

@@ -88,7 +88,6 @@ const Favouritepage = () => {
 
                   <p className="text-sm text-gray-400 mb-3">
                     ⭐ {movie.rating}
-                    {movie.status === "released" && <> • ₹{movie.price}</>}
                   </p>
 
                   <div className="flex gap-2">
