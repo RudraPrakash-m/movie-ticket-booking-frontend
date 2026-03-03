@@ -10,6 +10,9 @@ const BookTicketPage = () => {
 
   const { theaterLayouts } = useContext(TheaterLayoutContext);
 
+  // console.log(theaterLayouts);
+  
+
   const [selectedShow, setSelectedShow] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [loadingSeats, setLoadingSeats] = useState(false);

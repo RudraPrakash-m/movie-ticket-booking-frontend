@@ -1,6 +1,7 @@
 import React, { useContext, useRef, useState } from "react";
 import { allMovies } from "../../contexts/allMoviesContext/AllMoviesContext";
 import { toast } from "react-toastify";
+import { TheaterLayoutContext } from "../../contexts/theaterLayoutContext/TheaterLayoutProvider";
 
 const initialMovieForm = {
   title: "",
@@ -27,6 +28,8 @@ const initialShowForm = {
 const AdminMovieAdd = () => {
   const { movies, addMovie, updateMovie, deleteMovie, addShow } =
     useContext(allMovies);
+
+  const { theaterLayouts } = useContext(TheaterLayoutContext);
 
   const [movieForm, setMovieForm] = useState(initialMovieForm);
   const [showForm, setShowForm] = useState(initialShowForm);
@@ -406,15 +409,21 @@ const AdminMovieAdd = () => {
                   required
                 />
 
-                <input
+                <select
                   className="inputDark"
-                  type="number"
                   name="screenId"
-                  placeholder="Screen ID"
                   value={showForm.screenId}
                   onChange={handleShowChange}
                   required
-                />
+                >
+                  <option value="">Select Screen</option>
+
+                  {theaterLayouts.map((screen) => (
+                    <option key={screen.id} value={screen.id}>
+                      {screen.name} (ID: {screen.id})
+                    </option>
+                  ))}
+                </select>
 
                 <button className="w-full bg-green-600 hover:bg-green-700 transition py-2 rounded-md font-medium">
                   Add Show

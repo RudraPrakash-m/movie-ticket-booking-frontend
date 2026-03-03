@@ -68,11 +68,7 @@ const App = () => {
         },
         {
           path: "/book-ticket",
-          element: (
-            <TheaterLayoutProvider>
-              <BookTicketPage />
-            </TheaterLayoutProvider>
-          ),
+          element: <BookTicketPage />,
         },
         {
           path: "/my-bookings",
