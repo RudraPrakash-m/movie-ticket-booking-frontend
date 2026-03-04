@@ -2,20 +2,26 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { TheaterLayoutContext } from "../../contexts/theaterLayoutContext/TheaterLayoutProvider";
 import TheaterLayout from "../../components/TheaterLayout/TheaterLayout";
+import axios from "axios";
 
 const BookTicketPage = () => {
   const location = useLocation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { movie, selectedDate } = location.state || {};
 
   const { theaterLayouts } = useContext(TheaterLayoutContext);
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   // console.log(theaterLayouts);
-  
 
   const [selectedShow, setSelectedShow] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [loadingSeats, setLoadingSeats] = useState(false);
+  // console.log(movie);
+
+  // console.log(selectedShow?._id);
+  
 
   const theaterRef = useRef(null);
 
@@ -62,6 +68,34 @@ const BookTicketPage = () => {
       return () => clearTimeout(timer);
     }
   }, [selectedShow]);
+
+  const holdSeats = async () => {
+    try {
+      await axios.post(
+        `${API_URL}/api/user/hold-seats`,
+        {
+          movieId: movie.id,
+          showId: selectedShow._id,
+          seats: selectedSeats,
+        },
+        { withCredentials: true },
+      );
+
+      
+
+      navigate("/payment", {
+        state: {
+          movie,
+          totalPrice,
+          selectedSeats,
+          showId: selectedShow._id,
+        },
+      });
+    } catch (error) {
+      console.error("Seat lock failed:", error);
+      toast.error("Some seats were just booked by another user. Please reselect.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white px-6 md:px-16 pt-28 pb-16">
@@ -191,7 +225,7 @@ const BookTicketPage = () => {
             <button
               disabled={selectedSeats.length === 0}
               className="w-full mt-8 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 py-3 rounded-lg font-semibold transition"
-              onClick={()=>navigate("/payment")}
+              onClick={holdSeats}
             >
               Proceed to Payment
             </button>
