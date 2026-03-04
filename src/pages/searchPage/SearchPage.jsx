@@ -7,6 +7,7 @@ import { Heart } from "lucide-react";
 const SearchPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  
 
   const { movies } = useContext(allMovies);
   const { user, toggleFavourite } = useContext(userCon);

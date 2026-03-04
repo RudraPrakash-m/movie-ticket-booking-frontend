@@ -13,6 +13,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const prevPage = useRef(null);
+
   const closeTimeoutRef = useRef(null);
 
   const isAdmin = user?.role === "admin";
@@ -33,9 +35,13 @@ const Navbar = () => {
       const trimmed = searchTerm.trim();
 
       if (trimmed !== "") {
+        if (!location.pathname.startsWith("/search")) {
+          prevPage.current = location.pathname;
+        }
+
         navigate(`/search?q=${trimmed}`, { replace: true });
       } else if (location.pathname.startsWith("/search")) {
-        navigate("/", { replace: true });
+        navigate(prevPage.current || "/", { replace: true });
       }
     }, 400);
 
